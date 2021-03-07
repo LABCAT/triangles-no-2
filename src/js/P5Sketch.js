@@ -78,20 +78,23 @@ const P5Sketch = () => {
         p.reloadTrianglesArray = (drawUpperTriangles) => {
           p.triangles = [];
           const y = (p.height <= (p.width / 2)) ? p.height : p.height + ((p.width / 2) - p.height) /2;
-          p.loadSierpinskiTriangles(0, y, p.width, Math.floor(p.random(360)), 1);
+          const baseFill = Math.floor(p.random(360));
+          p.loadSierpinskiTriangles(0, y, p.width, baseFill, 1);
           if (drawUpperTriangles){
+            const outerLeftBaseFill = ((baseFill - 120) >= 0) ? (baseFill - 120) : (baseFill + 240);
             p.loadSierpinskiTrianglesOuterLeft(
               0,
               y,
               p.width,
-              Math.floor(p.random(360)),
+              outerLeftBaseFill,
               1
             );
+            const outerRightBaseFill = ((baseFill + 120) <= 360) ? (baseFill + 120) : (baseFill - 240);
             p.loadSierpinskiTrianglesOuterRight(
               0,
               y,
               p.width,
-              Math.floor(p.random(360)),
+              outerRightBaseFill,
               1
             );
           }
@@ -221,11 +224,11 @@ const P5Sketch = () => {
 
             //Left Triangle
             const leftFillHue =
-              fillHue + 60 > 360 ? fillHue - 300 : fillHue + 60; 
+              fillHue - 60 <= 0 ? fillHue + 300 : fillHue - 60; 
             p.loadSierpinskiTriangles(x, y, size / 2, leftFillHue, depth + 1);
             //right Triangle
             const rightFillHue =
-              fillHue + 180 > 360 ? fillHue - 180 : fillHue + 180; 
+              fillHue + 60 >= 360 ? fillHue - 300 : fillHue + 60; 
             p.loadSierpinskiTriangles(
               x + size / 2,
               y,
@@ -235,7 +238,7 @@ const P5Sketch = () => {
             );
             //Top Triangle
             const topFillHue =
-              fillHue + 120 > 360 ? fillHue - 240 : fillHue + 120; 
+              fillHue + 180 >= 360 ? fillHue - 180 : fillHue + 180; 
             p.loadSierpinskiTriangles(
               x + size / 4,
               y - size / 4,
