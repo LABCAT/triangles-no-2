@@ -60,9 +60,13 @@ const P5Sketch = () => {
           if (!p.cueSet1Completed.includes(vars.currentCue)) {
             p.cueSet1Completed.push(vars.currentCue);
             const arrayIndex = (vars.currentCue % 8) ? (vars.currentCue % 8) : 8;
+            const drawUpperTriangles =
+              (vars.currentCue > 16 && vars.currentCue < 32) ||
+              (vars.currentCue > 48 && vars.currentCue < 64) ||
+              (vars.currentCue > 80); 
           
             if (arrayIndex === 1) {
-              p.reloadTrianglesArray();
+              p.reloadTrianglesArray(drawUpperTriangles);
               p.background(255);
             }
 
@@ -71,10 +75,130 @@ const P5Sketch = () => {
           }
         };
 
-        p.reloadTrianglesArray = () => {
+        p.reloadTrianglesArray = (drawUpperTriangles) => {
           p.triangles = [];
-          p.loadSierpinskiTriangles(0, p.height, p.width, Math.floor(p.random(360)), 1);
+          const y = (p.height <= (p.width / 2)) ? p.height : p.height + ((p.width / 2) - p.height) /2;
+          p.loadSierpinskiTriangles(0, y, p.width, Math.floor(p.random(360)), 1);
+          if (drawUpperTriangles){
+            p.loadSierpinskiTrianglesOuterLeft(
+              0,
+              y,
+              p.width,
+              Math.floor(p.random(360)),
+              1
+            );
+            p.loadSierpinskiTrianglesOuterRight(
+              0,
+              y,
+              p.width,
+              Math.floor(p.random(360)),
+              1
+            );
+          }
         }
+
+        p.loadSierpinskiTrianglesOuterLeft = (x, y, size, fillHue, depth) => {
+          if (size >= 60) {
+            if (fillHue >= 360) {
+              fillHue = fillHue - 360;
+            }
+            if (typeof p.triangles[depth] === "undefined") {
+              p.triangles[depth] = [];
+            }
+            p.triangles[depth].push({
+              x1: x,
+              y1: y,
+              x2: x + size / 2,
+              y2: y - size / 2,
+              x3: x,
+              y3: y - size / 2,
+              fillHue: fillHue,
+            });
+            //Left Triangle
+            const leftFillHue =
+              fillHue + 20 > 360 ? fillHue - 340 : fillHue + 20;
+            p.loadSierpinskiTrianglesOuterLeft(
+              x,
+              y,
+              size / 2,
+              leftFillHue,
+              depth + 1
+            );
+            //top Triangle
+            const topFillHue =
+              fillHue + 60 > 360 ? fillHue - 300 : fillHue + 60;
+            p.loadSierpinskiTrianglesOuterLeft(
+              x,
+              y - size / 4,
+              size / 2,
+              topFillHue,
+              depth + 1
+            );
+            //right Triangle
+            const rightFillHue =
+              fillHue + 40 > 360 ? fillHue - 320 : fillHue + 40;
+            p.loadSierpinskiTrianglesOuterLeft(
+              x + size / 4,
+              y - size / 4,
+              size / 2,
+              rightFillHue,
+              depth + 1
+            );
+          }
+        };
+
+         p.loadSierpinskiTrianglesOuterRight = (x, y, size, fillHue, depth) => {
+           if (size >= 60) {
+             if (fillHue >= 360) {
+               fillHue = fillHue - 360;
+             }
+             if (typeof p.triangles[depth] === "undefined") {
+               p.triangles[depth] = [];
+             }
+
+             p.triangles[depth].push({
+               x1: x + size / 2,
+               y1: y - size / 2,
+               x2: x + size,
+               y2: y,
+               x3: x + size,
+               y3: y - size / 2,
+               fillHue: fillHue,
+             });
+
+             //Left Triangle
+             const leftFillHue =
+               fillHue + 40 > 360 ? fillHue - 320 : fillHue + 40;
+             p.loadSierpinskiTrianglesOuterRight(
+               x + size / 4,
+               y - size / 4,
+               size / 2,
+               leftFillHue,
+               depth + 1
+             );
+
+             //top Triangle
+             const topFillHue =
+               fillHue + 60 > 360 ? fillHue - 300 : fillHue + 60;
+             p.loadSierpinskiTrianglesOuterRight(
+               x + size / 2,
+               y - size / 4,
+               size / 2,
+               topFillHue,
+               depth + 1
+             );
+             //right Triangle
+            const rightFillHue =
+              fillHue + 20 > 360 ? fillHue - 340 : fillHue + 20;
+            p.loadSierpinskiTrianglesOuterRight(
+              x + size / 2,
+              y,
+              size / 2,
+              rightFillHue,
+              depth + 1
+            );
+           }
+         };
 
 
         p.loadSierpinskiTriangles = (x, y, size, fillHue, depth) => {
@@ -124,7 +248,7 @@ const P5Sketch = () => {
 
         p.drawSierpinskiTriangles = (array, index, duration) => {
           let delayAmount =  0;
-          if(index > 6){
+          if(index > 7){
             delayAmount =  parseInt(duration * 1000) / array.length;
             array = ShuffleArray(array);
           }
