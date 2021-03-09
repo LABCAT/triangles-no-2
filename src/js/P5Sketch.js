@@ -299,7 +299,9 @@ const P5Sketch = () => {
              console.log(
                "Music By: http://labcat.nz/",
                "\n",
-               "Animation By: https://github.com/LABCAT/triangles-no-2"
+               "Animation By: https://github.com/LABCAT/triangles-no-2",
+               "\n",
+               "Code Inspiration: https://breaksome.tech/coding-the-sierpinski-triangle-in-p5js/"
              );
              p.song.stop();
            }
